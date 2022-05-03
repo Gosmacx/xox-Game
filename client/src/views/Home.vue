@@ -22,7 +22,7 @@
                         @input="protectNumber"
                         @keyup="next(1)" 
                         @keyup.delete="next(0)" 
-                        autofocus
+                        autofocus type="number"
                         class=" text-black text-7xl text-center flex items-center justify-center w-24 h-20 outline-none rounded-lg"
                     >
 
@@ -31,6 +31,7 @@
                         @input="protectNumber"
                         @keyup="next(2)" 
                         @keyup.delete="next(0)" 
+                        type="number"
                         class=" text-black text-7xl text-center flex items-center justify-center w-24 h-20 outline-none rounded-lg"
                     >
 
@@ -38,6 +39,7 @@
                         id="field3" 
                         @input="protectNumber"
                         @keyup.delete="next(1)" 
+                        type="number"
                         class=" text-black text-7xl text-center flex items-center justify-center w-24 h-20 outline-none rounded-lg mr-3"
                     >
 
