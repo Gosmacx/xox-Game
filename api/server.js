@@ -8,7 +8,7 @@ const io = new Server(server, {
   }
 });
 
-const PORT = 5000 || process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 const Room = require('./models/Room')
 const User  = require('./models/User')
