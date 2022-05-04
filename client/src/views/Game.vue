@@ -2,7 +2,7 @@
     <!-- WAITING -->
     <div v-if="!room?.x || !room?.o" class="h-screen w-full flex flex-col space-y-20 items-center justify-center" >
         <span class="text-bold text-8xl text-purple-500" > {{ room?.id }} </span>
-        <span class="text-bold text-8xl animate-pulse" >Oyuncu Bekleniyor...</span>
+        <span class="text-bold md:text-8xl text-5xl text-center animate-pulse" >Oyuncu Bekleniyor...</span>
     </div>
 
     <!-- GAME -->
@@ -12,40 +12,13 @@
         <finish-screen v-if="finished" :againPlay="againPlay" :finished="finished" />
         
         <!-- PLAYER NAMES -->
-        <div class="flex items-center justify-center space-x-6 border-2 border-white py-3 px-2 rounded-lg mb-20" >   
-            <div class="items-center justify-center flex flex-col" >
-                <span class="text-7xl absolute opacity-5" >X</span>
-                <span :class="{turnPlayer: room.turn == room.x.id }" class="font-bold text-3xl z-10" > {{ room.x.username }} </span>
-            </div>
-            <span class="text-purple-500 font-bold text-5xl" >VS</span>
-            <div class="items-center justify-center flex flex-col" >
-                <span class="text-7xl absolute opacity-5 text-center" >O</span>
-                <span :class="{turnPlayer: room.turn == room.o.id }" class="font-bold text-3xl z-10" > {{ room.o.username }} </span>
-            </div>
-
-        </div>
+        <player-names :room="room" />
 
         <!-- GAME TABLE  -->
-        <div v-if="refresh" class="flex flex-wrap w-[336px] items-center justify-center shadow-lg" >      
-            <div 
-                v-for="table in [1,2,3,4,5,6,7,8,9]" 
-                @click="chooseIndex(table)"
-                :key="table" 
-                :id="`table${table}`"
-                class="group flex items-center justify-center w-28 h-28 cursor-pointer transition-all" 
-                :class="{ 
-                    rightBorder: [1,4,7,2,5,8].includes(table), 
-                    horizontalBorder: [4,5,6].includes(table),
-                }" 
-            >
-                <span v-if="!room.moves?.find(x => x.index == table)" class="invisible select-none group-hover:visible opacity-50 text-bold text-6xl text-white" > 
-                    {{ player }} 
-                </span>
-            </div>
-        </div>
+         <game-table v-if="refresh" :room="room" :player="player" :chooseIndex="chooseIndex" />
 
-        <!-- LOADING SCREEN -->
-        <div v-else class="w-[336px] h-80 flex items-center justify-center" >
+        <!-- REFRESH LOADING SCREEN -->
+        <div v-else class="w-[336px] h-[336px] flex items-center justify-center" >
             <loading-circle/>
         </div>
     
@@ -53,7 +26,9 @@
         <countdown-bar :countdown="countdown" />
 
         <!-- BIG USERNAME -->
-        <span class="-z-10 absolute text-[200px] -bottom-12 whitespace-pre-wrap opacity-5 text-center max-w-max " > {{ player === 'O' ? room.o.username : room.x.username }} </span>
+        <span class="-z-10 absolute md:text-[200px] text-7xl bottom-0 whitespace-pre-wrap opacity-5 text-center max-w-max " > 
+            {{ player === 'O' ? room.o.username : room.x.username }} 
+        </span>
 
     </section>
 
@@ -63,13 +38,16 @@
 
 import { ref } from 'vue'
 import socket from '../socket'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import countdownBar from '../components/countdownBar.vue'
 import finishScreen from '../components/finishScreen.vue'
 import loadingCircle from '../components/loadingCircle.vue'
+import gameTable from '../components/gameTable.vue'
+import playerNames from '../components/playerNames.vue'
 
 const route = useRoute()
+const router = useRouter()
 const player = ref(null)
 const refresh = ref(true)
 const countdown = ref(328)
@@ -79,6 +57,9 @@ const room = ref(null)
 socket.emit('get-room', route.query.room)
 
 socket.on('room-data', (data) => {
+    
+    // if (data.o && data.x) return router.push("/");
+
     player.value = socket.id == data?.x?.id ? 'X' : 'O'
     room.value = data
 })
@@ -107,13 +88,14 @@ socket.on('player-disconnected', (data) => {
 socket.on('refresh-game', (data) => {
 
     refresh.value = false
+    
+    for (let index = 10; index < 10; index++) {
+        document.getElementById(`table${table}`).innerHTML = ''        
+    }
+    
     setTimeout(() => {
         refresh.value = true
     }, 1000);
-
-    [1,2,3,4,5,6,7,8,9].forEach(table => {
-        document.getElementById(`table${table}`).innerHTML = ''
-    })
 
     finished.value = null
     room.value = data

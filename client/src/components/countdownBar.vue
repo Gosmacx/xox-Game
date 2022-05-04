@@ -7,7 +7,7 @@
 <script setup>
 
 defineProps({
-    countdown: String
+    countdown: Number
 })
 
 </script>
