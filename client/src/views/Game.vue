@@ -2,7 +2,7 @@
     <!-- WAITING -->
     <div v-if="!room?.x || !room?.o" class="h-screen w-full flex flex-col space-y-20 items-center justify-center" >
         <span class="text-bold text-8xl text-purple-500" > {{ room?.id }} </span>
-        <span class="text-bold text-8xl animate-pulse" >Oyuncu Bekleniyor</span>
+        <span class="text-bold text-8xl animate-pulse" >Oyuncu Bekleniyor...</span>
     </div>
 
     <!-- GAME -->
