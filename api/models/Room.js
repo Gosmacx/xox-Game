@@ -2,7 +2,7 @@ class Room {
     constructor(id) {
         this.x = null
         this.o = null
-        this.id = id
+        this.id = parseInt(id)
         this.moves = []
         this.turn = null
     }

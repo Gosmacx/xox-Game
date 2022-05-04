@@ -58,7 +58,7 @@ socket.emit('get-room', route.query.room)
 
 socket.on('room-data', (data) => {
     
-    // if (data.o && data.x) return router.push("/");
+    if (data.o.id !== socket.id && data.x.id !== socket.id) return router.push("/");
 
     player.value = socket.id == data?.x?.id ? 'X' : 'O'
     room.value = data

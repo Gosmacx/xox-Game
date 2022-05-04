@@ -29,7 +29,7 @@ const positions = [
 function checkGame(moves) {
   return positions.some(position => {
       return position.every(index => {
-          return moves.includes(index)
+          return moves.map(item => item.index).includes(index)
       })
   })
 }
@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
       newRoom.o =  new User(socket.id, username, role)
     }
 
-
+    _room = newRoom
     socket.join(uid)
 
     socket.emit('room-created', newRoom)
@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
   socket.on('join-room', ({id, username}) => {   
 
     const room = rooms.get(parseInt(id))
-    if (!room) return socket.emit('error', 'Error');
+    if (!room) return socket.emit('room-notfound');
 
     if (!room.x) room.x = new User(socket.id, username, 'X')
     else room.o = new User(socket.id, username, 'O')
@@ -117,7 +117,8 @@ io.on("connection", (socket) => {
     })
     
     // Check the Winner
-    if (checkGame(player.moves)) return io.to(roomID).emit('game-finished', player)
+    const isWin = checkGame(room.moves.filter(move => move.player === player.role ))
+    if (isWin) return io.to(roomID).emit('game-finished', player)
     else if (room.moves.length === 9) return io.to(roomID).emit('game-finished')
 
 
@@ -128,22 +129,25 @@ io.on("connection", (socket) => {
       const room = rooms.get(roomPacket.id)
       if (!room) return socket.emit('error', 'Error');
 
+      // Set new random turn
       const mixPlayer = [room.x, room.o]
       const newTurn = mixPlayer[Math.floor(Math.random() * mixPlayer.length)]
     
-      room.moves = []
       room.turn = newTurn.id
+      room.moves = []
       room.x.moves = []
       room.o.moves = []
   
-      io.to(parseInt(room.id)).emit('refresh-game', room)
+      io.to(room.id).emit('refresh-game', room)
   
   })
 
   socket.on('disconnect', () => {
+
     if (!_room) return;
     const room = rooms.get(_room.id)
     if (!room) return;
+
 
     if (room.x.id === socket.id) {
       room.x = null
@@ -156,6 +160,7 @@ io.on("connection", (socket) => {
     room.turn = null
 
     io.to(room.id).emit('player-disconnected', room)
+
 
     if (!room.x && !room.o) {
       rooms.delete(room.id)

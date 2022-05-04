@@ -77,6 +77,7 @@ function join(room) {
     router.push({ name: 'Game', query: { room: room.id } })
 }
 
+socket.on('room-notfound', (room) => loading.value = false )
 socket.on('room-joined', (room) => join(room))
 socket.on('room-created', (room) => join(room))
 
