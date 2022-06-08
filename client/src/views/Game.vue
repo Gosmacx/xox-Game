@@ -26,7 +26,7 @@
         <countdown-bar :countdown="countdown" />
 
         <!-- BIG USERNAME -->
-        <span class="-z-10 absolute md:text-[200px] text-7xl bottom-0 whitespace-pre-wrap opacity-5 text-center max-w-max " > 
+        <span class="-z-10 absolute md:text-[150px] text-7xl bottom-10 whitespace-pre-wrap opacity-5 text-center max-w-max " > 
             {{ player === 'O' ? room.o.username : room.x.username }} 
         </span>
 
