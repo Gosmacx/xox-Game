@@ -149,10 +149,10 @@ io.on("connection", (socket) => {
     if (!room) return;
 
 
-    if (room.x.id === socket.id) {
+    if (room.x?.id === socket.id) {
       room.x = null
     }
-    else if (room.o.id === socket.id) {
+    else if (room.o?.id === socket.id) {
       room.o = null
     }
 
